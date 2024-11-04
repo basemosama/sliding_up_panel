@@ -371,7 +371,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
             child: AnimatedBuilder(
               animation: _ac,
               builder: (context, child) {
-                print('Panel :${_ac.value}');
                 final value = widget.panelStyle == PanelStyle.Box
                     ? double.parse(_ac.value.toStringAsPrecision(2))
                     : _ac.value;
@@ -412,7 +411,16 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                             : 0),
                     child: widget.collapsed != null
                         ? FadeTransition(
-                            opacity: Tween(begin: 0.0, end: 1.0).animate(_ac),
+                            opacity: TweenSequence([
+                              TweenSequenceItem(
+                                tween: ConstantTween(0.0),
+                                weight: 0.5,
+                              ),
+                              TweenSequenceItem(
+                                tween: Tween(begin: 0.0, end: 1.0),
+                                weight: 0.5,
+                              ),
+                            ]).animate(_ac),
                             child: Container(
                               height: widget.maxHeight,
                               child: widget.panel != null
@@ -472,8 +480,17 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                       child: widget.collapsed == null
                           ? Container()
                           : FadeTransition(
-                              opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
-
+                              // Hide from .5 to 1
+                              opacity: TweenSequence([
+                                TweenSequenceItem(
+                                  tween: Tween(begin: 1.0, end: 0.0),
+                                  weight: 0.5,
+                                ),
+                                TweenSequenceItem(
+                                  tween: ConstantTween(0.0),
+                                  weight: 0.5,
+                                ),
+                              ]).animate(_ac),
                               // if the panel is open ignore pointers (touch events) on the collapsed
                               // child so that way touch events go through to whatever is underneath
                               child: IgnorePointer(
