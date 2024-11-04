@@ -6,10 +6,10 @@ Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 
 enum SlideDirection {
@@ -170,17 +170,15 @@ class SlidingUpPanel extends StatefulWidget {
   /// method.
   final bool allowFullyPanelClosingBehaviour;
 
-
   /// Add a custom resize handle to the sliding panel.
   final Widget? resizeHandle;
-
 
   SlidingUpPanel(
       {Key? key,
       this.panel,
-        this.allowDraggableSnappingBehaviour = false,
-        this.allowFullyPanelClosingBehaviour = false,
-        this.resizeHandle,
+      this.allowDraggableSnappingBehaviour = false,
+      this.allowFullyPanelClosingBehaviour = false,
+      this.resizeHandle,
       this.panelBuilder,
       this.body,
       this.collapsed,
@@ -331,7 +329,10 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                   animation: _ac,
                   builder: (context, child) {
                     return Container(
-                      height: widget.allowFullyPanelClosingBehaviour ? _ac.value * (widget.maxHeight - widget.minHeight) : _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
+                      height: widget.allowFullyPanelClosingBehaviour
+                          ? _ac.value * (widget.maxHeight - widget.minHeight)
+                          : _ac.value * (widget.maxHeight - widget.minHeight) +
+                              widget.minHeight,
                       margin: widget.margin,
                       padding: widget.padding,
                       decoration: widget.renderPanelSheet
@@ -349,25 +350,37 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                     children: <Widget>[
                       //open panel
                       Positioned(
-                          top: widget.slideDirection == SlideDirection.UP
-                              ? 0.0
-                              : null,
-                          bottom: widget.slideDirection == SlideDirection.DOWN
-                              ? 0.0
-                              : null,
-                          width: MediaQuery.of(context).size.width -
-                              (widget.margin != null
-                                  ? widget.margin!.horizontal
-                                  : 0) -
-                              (widget.padding != null
-                                  ? widget.padding!.horizontal
-                                  : 0),
-                          child: Container(
-                            height: widget.maxHeight,
-                            child: widget.panel != null
-                                ? widget.panel
-                                : widget.panelBuilder!(_sc),
-                          )),
+                        top: widget.slideDirection == SlideDirection.UP
+                            ? 0.0
+                            : null,
+                        bottom: widget.slideDirection == SlideDirection.DOWN
+                            ? 0.0
+                            : null,
+                        width: MediaQuery.of(context).size.width -
+                            (widget.margin != null
+                                ? widget.margin!.horizontal
+                                : 0) -
+                            (widget.padding != null
+                                ? widget.padding!.horizontal
+                                : 0),
+                        child: widget.collapsed != null
+                            ? FadeTransition(
+                                opacity:
+                                    Tween(begin: 0.0, end: 1.0).animate(_ac),
+                                child: Container(
+                                  height: widget.maxHeight,
+                                  child: widget.panel != null
+                                      ? widget.panel
+                                      : widget.panelBuilder!(_sc),
+                                ),
+                              )
+                            : Container(
+                                height: widget.maxHeight,
+                                child: widget.panel != null
+                                    ? widget.panel
+                                    : widget.panelBuilder!(_sc),
+                              ),
+                      ),
 
                       // header
                       widget.header != null
@@ -528,7 +541,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   }
 
   void _applySnappingBehavior(Velocity v) {
-
     double minFlingVelocity = 365.0;
 
     // let the current animation finish before starting a new one
@@ -547,7 +559,29 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     }
 
     // Step 1: Define your snap points
-    List<double> snapPoints = [0.0, 0.50, 0.1, 0.150, 0.2, 0.250, 0.3, 0.350, 0.4, 0.450, 0.5, 0.550, 0.6, 0.650, 0.7, 0.750, 0.8, 0.850, 0.9, 0.950, 1.0];
+    List<double> snapPoints = [
+      0.0,
+      0.50,
+      0.1,
+      0.150,
+      0.2,
+      0.250,
+      0.3,
+      0.350,
+      0.4,
+      0.450,
+      0.5,
+      0.550,
+      0.6,
+      0.650,
+      0.7,
+      0.750,
+      0.8,
+      0.850,
+      0.9,
+      0.950,
+      1.0
+    ];
 
     // Step 2: Calculate the closest snap point
     double closestSnapPoint = snapPoints.reduce((a, b) {
@@ -565,7 +599,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
       }
     } else {
       // Existing non-snapping behavior
-      if(mounted)
+      if (mounted)
         _ac.animateTo(
           _ac.value + visualVelocity * 0.16,
           duration: Duration(milliseconds: 410),
@@ -616,7 +650,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
         // panel snapping disabled
       } else {
-        if(mounted)
+        if (mounted)
           _ac.animateTo(
             _ac.value + visualVelocity * 0.16,
             duration: Duration(milliseconds: 410),
@@ -638,7 +672,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
       }
     }
   }
-
 
   void _flingPanelToPosition(double targetPos, double velocity) {
     final Simulation simulation = SpringSimulation(
@@ -687,7 +720,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   }
 
   Future<void> _showAt(double value) async {
-    if(mounted)
+    if (mounted)
       _ac.animateTo(value).then((x) {
         setState(() {
           _isPanelVisible = true;
