@@ -421,11 +421,20 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                                 weight: 0.5,
                               ),
                             ]).animate(_ac),
-                            child: Container(
-                              height: widget.maxHeight,
-                              child: widget.panel != null
-                                  ? widget.panel
-                                  : widget.panelBuilder!(_sc),
+                            child: AnimatedBuilder(
+                              animation: _ac,
+                              builder: (context, child) {
+                                return IgnorePointer(
+                                  ignoring: _isPanelClosed,
+                                  child: child,
+                                );
+                              },
+                              child: Container(
+                                height: widget.maxHeight,
+                                child: widget.panel != null
+                                    ? widget.panel
+                                    : widget.panelBuilder!(_sc),
+                              ),
                             ),
                           )
                         : Container(
@@ -493,8 +502,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                               ]).animate(_ac),
                               // if the panel is open ignore pointers (touch events) on the collapsed
                               // child so that way touch events go through to whatever is underneath
-                              child: IgnorePointer(
-                                  ignoring: _isPanelOpen,
+                              child: AnimatedBuilder(
+                                  animation: _ac,
+                                  builder: (context, child) {
+                                    return IgnorePointer(
+                                      ignoring: _isPanelOpen,
+                                      child: child,
+                                    );
+                                  },
                                   child: widget.collapsed),
                             ),
                     ),
