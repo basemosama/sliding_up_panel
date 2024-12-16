@@ -257,7 +257,10 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   @override
   void initState() {
     super.initState();
+    _initPanel();
+  }
 
+  void _initPanel() {
     _ac = new AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 300),
@@ -368,8 +371,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                     //if a color exists, then touch events won't go through
                     color: _ac.value == 0.0
                         ? null
-                        : widget.backdropColor
-                            .withOpacity(widget.backdropOpacity * _ac.value),
+                        : widget.backdropColor.withAlpha(
+                            (widget.backdropOpacity * _ac.value * 255).ceil()),
                   );
                 }),
           );
@@ -389,10 +392,17 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                     ? double.parse(_ac.value.toStringAsPrecision(2))
                     : _ac.value;
 
+                final bool isPanelFullyClosed =
+                    widget.allowFullyPanelClosingBehaviour && (value <= 0.05);
+
+                if (isPanelFullyClosed) return SizedBox.shrink();
+
                 return Container(
                   height: widget.allowFullyPanelClosingBehaviour
                       ? value *
-                          (widget.maxHeight + _resizeHeight - widget.minHeight)
+                          (widget.maxHeight +
+                              (widget.padding?.vertical ?? 0) -
+                              widget.minHeight)
                       : value *
                               (widget.maxHeight +
                                   _resizeHeight -
